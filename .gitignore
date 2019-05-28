@@ -1,2 +1,2 @@
-imgproc/
-result/
+/imgproc/*
+/result/*
