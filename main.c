@@ -17,6 +17,7 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
+	#pragma omp parallel for
 	for (y = 0; y < (src->height - template->height); y++)
 	{
 		for (x = 0; x < src->width - template->width; x++)
@@ -57,6 +58,7 @@ void templateMatchingColor(Image* src, Image* template, Point* position, double*
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
+	#pragma omp parallel for
 	for (y = 0; y < (src->height - template->height); y++)
 	{
 		for (x = 0; x < src->width - template->width; x++)
