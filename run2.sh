@@ -7,24 +7,24 @@ x=0
 
 if [ $1 = level1 ]
 then
+   convert "${image}" $name
    rotation=0
    echo $bname:
    for template in $1/*.ppm; do
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.5 cwpg
+	   ./matching $name "${template}" rotation 0.3 cwpg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.5 wpg
+	   ./matching $name "${template}" rotation 0.3 wpg
        fi
    done
    echo ""
 fi
 if [ $1 = level2 ]
 then
-   convet -selective-blur 10*30+30% "${image}" "${name}"
-   #convert -median 3 "${image}" "${name}"
+   convert -median 3 "${image}" "${name}"
    rotation=0
    echo $bname:
    for template in $1/*.ppm; do
@@ -57,6 +57,22 @@ then
    done
    echo ""
 fi
-
+if [ $1 = level4 ]
+then
+   convert "${image}" $name
+   rotation=0
+   echo $bname:
+   for template in $1/*.ppm; do
+       echo `basename ${template}`
+       if [ $x = 0 ]
+       then
+	   ./matching $name "${template}" rotation 0.3 cwpg
+	   x=1
+       else
+	   ./matching $name "${template}" rotation 0.3 wpg
+       fi
+   done
+   echo ""
+fi
 
 	 
