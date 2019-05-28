@@ -24,7 +24,7 @@ then
 fi
 if [ $1 = level2 ]
 then
-   convert -median 3 "${image}" "${name}"
+   convert -selective-blur 10*30+30% "${image}" "${name}"
    rotation=0
    echo $bname:
    for template in $1/*.ppm; do
