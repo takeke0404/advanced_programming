@@ -28,6 +28,7 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 			{
 				for (i = 0; i < template->width; i++)
 				{
+				  if(template->data[j*template->width+i]==0){continue;}
 					int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
 					distance += v*v;
 				}
