@@ -31,10 +31,10 @@ then
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching2 $name "${template}" rotation 0.8 cwpg
+	   ./matching $name "${template}" rotation 0.8 cwpg
 	   x=1
        else
-	   ./matching2 $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 wpg
        fi
    done
    echo ""
@@ -48,10 +48,10 @@ then
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching2 $name "${template}" rotation 0.8 cwpg
+	   ./matching $name "${template}" rotation 0.8 cwpg
 	   x=1
        else
-	   ./matching2 $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 wpg
        fi
    done
    echo ""

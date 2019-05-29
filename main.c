@@ -17,7 +17,46 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
-	#pragma omp parallel for
+	for (y = 0; y < (src->height - template->height); y++)
+	{
+		for (x = 0; x < src->width - template->width; x++)
+		{
+			int distance = 0;
+			//SSD
+			for (j = 0; j < template->height; j++)
+			{
+				for (i = 0; i < template->width; i++)
+				{
+					int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
+					distance += v*v;
+				}
+			}
+			if (distance < min_distance)
+			{
+				min_distance = distance;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+
+	position->x = ret_x;
+	position->y = ret_y;
+	*distance = sqrt(min_distance) / (template->width*template->height);
+}
+//level4用
+void templateMatchingGray1(Image* src, Image* template, Point* position, double* distance)
+{
+	if (src->channel != 1 || template->channel != 1)
+	{
+		fprintf(stderr, "src and/or templeta image is not a gray image.\n");
+		return;
+	}
+
+	int min_distance = INT_MAX;
+	int ret_x = 0;
+	int ret_y = 0;
+	int x, y, i, j;
 	for (y = 0; y < (src->height - template->height); y++)
 	{
 		for (x = 0; x < src->width - template->width; x++)
@@ -59,7 +98,6 @@ void templateMatchingColor(Image* src, Image* template, Point* position, double*
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
-	#pragma omp parallel for
 	for (y = 0; y < (src->height - template->height); y++)
 	{
 		for (x = 0; x < src->width - template->width; x++)
@@ -115,7 +153,9 @@ int main(int argc, char** argv)
 	char* template_file = argv[2];
 	int rotation = atoi(argv[3]);
 	double threshold = atof(argv[4]);
-
+	//level変数追加
+	int level = input_file[13]-'0';
+	
 	char output_name_base[256];
 	char output_name_txt[256];
 	char output_name_img[256];
@@ -151,7 +191,12 @@ int main(int argc, char** argv)
 		cvtColorGray(img, img_gray);
 		cvtColorGray(template, template_gray);
 
-		templateMatchingGray(img_gray, template_gray, &result, &distance);
+		//level別で処理を場合分け
+		if(level==1|level==4){
+		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
+		}else{
+		  templateMatchingGray(img_gray, template_gray, &result, &distance);
+		}
 
 		freeImage(img_gray);
 		freeImage(template_gray);
