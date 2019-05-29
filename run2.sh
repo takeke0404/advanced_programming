@@ -24,17 +24,17 @@ then
 fi
 if [ $1 = level2 ]
 then
-   convert -selective-blur 10*30+30% "${image}" "${name}"
+   convert -selective-blur 2x2+50% "${image}" "${name}"
    rotation=0
    echo $bname:
    for template in $1/*.ppm; do
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.7 cwpg
+	   ./matching $name "${template}" rotation 0.8 cwpg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.7 wpg
+	   ./matching $name "${template}" rotation 0.8 wpg
        fi
    done
    echo ""
