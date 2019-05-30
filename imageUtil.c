@@ -169,21 +169,12 @@ char* getBaseName(const char* name)
 	char* ret = (char*)malloc(len);
 	memcpy(ret, name, len);
 	int count = 0;
-	int i;
-	for (i = 0; i < len; i++)
-	{
-		if (ret[i] == '/')count++;
-	}
-
-	for (i = 0; i < count; i++)
-	{
-		ret = strchr(ret, '/');
-	}
+        ret = strrchr(ret,'/');
 
 	char* ppt;
 	if ((ppt = strchr(ret, '.')) != NULL) *ppt = '\0';
 
-	return ret + 1;
+	return ret+1;
 }
 
 void writeResult(const char* file_name, const char* template_name, const Point result, const int width, const int height, const int rotation, const double distance)

@@ -73,5 +73,38 @@ then
    done
    echo ""
 fi
-
+if [ $1 = level5 ]
+rm -rf result/level5*.txt
+then
+   rotation=0
+   echo $bname:
+   for template in tmpproc/0.5/*.ppm; do
+       echo `basename ${template}`
+       if [ $x = 0 ]
+       then
+	   ./matching $name "${template}" rotation 0.5 wpg
+       else
+	   ./matching $name "${template}" rotation 0.5 pg
+       fi
+   done
+   for template in tmpproc/1.0/*.ppm; do
+       echo `basename ${template}`
+       if [ $x = 0 ]
+       then
+	   ./matching $name "${template}" rotation 0.3 wpg
+       else
+	   ./matching $name "${template}" rotation 0.3 wpg
+       fi
+   done
+   for template in tmpproc/2.0/*.ppm; do
+       echo `basename ${template}`
+       if [ $x = 0 ]
+       then
+	   ./matching $name "${template}" rotation 0.3 wpg
+       else
+	   ./matching $name "${template}" rotation 0.3 wpg
+       fi
+   done
+   echo ""
+fi
 	 
