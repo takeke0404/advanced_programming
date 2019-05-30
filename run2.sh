@@ -8,70 +8,22 @@ x=0
 if [ $1 = level1 ]
 then
    convert "${image}" $name
-   rotation=0
-   echo $bname:
-   for template in $1/*.ppm; do
-       echo `basename ${template}`
-       if [ $x = 0 ]
-       then
-	   ./matching $name "${template}" rotation 0.3 cwpg
-	   x=1
-       else
-	   ./matching $name "${template}" rotation 0.3 wpg
-       fi
-   done
-   echo ""
+   seq 1 4 | xargs -P4 -n1 sh level1.sh $name 
 fi
 if [ $1 = level2 ]
 then
-   convert -selective-blur 2x2+50% "${image}" "${name}"
-   rotation=0
-   echo $bname:
-   for template in $1/*.ppm; do
-       echo `basename ${template}`
-       if [ $x = 0 ]
-       then
-	   ./matching $name "${template}" rotation 0.8 cwpg
-	   x=1
-       else
-	   ./matching $name "${template}" rotation 0.8 wpg
-       fi
-   done
-   echo ""
+   convert -median 3 "${image}" "${name}"
+   seq 1 4 | xargs -P4 -n1 sh level2.sh $name 
 fi
 if [ $1 = level3 ]
 then
-   convert "${image}" $name
-   rotation=0
-   echo $bname:
-   for template in $1/*.ppm; do
-       echo `basename ${template}`
-       if [ $x = 0 ]
-       then
-	   ./matching $name "${template}" rotation 0.8 cwpg
-	   x=1
-       else
-	   ./matching $name "${template}" rotation 0.8 wpg
-       fi
-   done
-   echo ""
+   convert -colors 64 "${image}" "${name}"
+   seq 1 4 | xargs -P4 -n1 sh level3.sh $name 
 fi
 if [ $1 = level4 ]
 then
    convert "${image}" $name
-   rotation=0
-   echo $bname:
-   for template in $1/*.ppm; do
-       echo `basename ${template}`
-       if [ $x = 0 ]
-       then
-	   ./matching $name "${template}" rotation 0.3 cwpg
-	   x=1
-       else
-	   ./matching $name "${template}" rotation 0.3 wpg
-       fi
-   done
-   echo ""
+   seq 1 4 | xargs -P4 -n1 sh level4.sh $name 
 fi
 if [ $1 = level5 ]
 rm -rf result/level5*.txt
