@@ -26,7 +26,6 @@ then
    seq 1 4 | xargs -P4 -n1 sh level4.sh $name 
 fi
 if [ $1 = level5 ]
-rm -rf result/level5*.txt
 then
    rotation=0
    echo $bname:
@@ -34,9 +33,10 @@ then
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.5 wpg
+	   ./matching $name "${template}" rotation 0.5 cwpg
+	   x=1
        else
-	   ./matching $name "${template}" rotation 0.5 pg
+	   ./matching $name "${template}" rotation 0.5 wpg
        fi
    done
    for template in tmpproc/1.0/*.ppm; do
