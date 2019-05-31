@@ -136,7 +136,7 @@ then
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching $name5 "${template}" rotation 0.5 cwpg
+	   ./matching $name5 "${template}" rotation 0.5 wpg
 	   x=1
        else
 	   ./matching $name5 "${template}" rotation 0.5 wpg
@@ -170,7 +170,7 @@ then
        echo `basename ${template}`
        if [ $x = 0 ]
        then
-	   ./matching $name6 "${template}" 0 0.5 cwpg
+	   ./matching $name6 "${template}" 0 0.5 wpg
 	   x=1
        else
 	   ./matching $name6 "${template}" 0 0.5 wpg
@@ -208,4 +208,5 @@ then
        fi
    done
    echo ""
+   sed -i -e '2,6d' ./result/level7_00$2.txt
 fi

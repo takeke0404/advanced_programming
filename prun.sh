@@ -18,4 +18,6 @@ then
 	convert -rotate 270 "${template}" tmpproc/rotate270/$bname
     done
 fi
+rm -rf result/$1*
 time seq 0 9 | xargs -P10 -n1 sh run2.sh $1 
+
