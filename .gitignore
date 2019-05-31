@@ -1,2 +1,10 @@
 /imgproc/*
 /result/*
+/tmpproc/0.5/*
+/tmpproc/1.0/*
+/tmpproc/2.0/*
+/tmpproc/rotate0/*
+/tmpproc/rotate90/*
+/tmpproc/rotate180/*
+/tmpproc/rotate270/*
+!.gitkeep
