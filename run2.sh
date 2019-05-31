@@ -12,7 +12,7 @@ then
 fi
 if [ $1 = level2 ]
 then
-   convert -median 3 "${image}" "${name}"
+   convert -blur 2x2 "${image}" "${name}"
    seq 1 4 | xargs -P4 -n1 sh level2.sh $name 
 fi
 if [ $1 = level3 ]
