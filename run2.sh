@@ -29,6 +29,7 @@ if [ $1 = level5 ]
 then
    rotation=0
    echo $bname:
+   convert "${image}" "${name}"
    for template in tmpproc/0.5/*.ppm; do
        echo `basename ${template}`
        if [ $x = 0 ]
