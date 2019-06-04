@@ -1,0 +1,31 @@
+#!/bin/sh
+name=$1
+x=0
+if [ $2 = 1 ]
+then
+   for template in tmpproc/inf/rotate0/0\1.0*.ppm; do
+       ./matching $name "{template}" 
+   done
+   echo ""
+fi
+if [ $2 = 2 ]
+then
+   for template in tmpproc/inf/rotate90/0\1.0*.ppm; do
+       ./matching $name "{template}" 
+   done
+   echo ""
+fi
+if [ $2 = 3 ]
+then
+   for template in tmpproc/inf/rotate180/0\1.0*.ppm; do
+       ./matching $name "{template}" 
+   done
+   echo ""
+fi
+if [ $2 = 4 ]
+then
+   for template in tmpproc/inf/rotate270/0\1.0*.ppm; do
+       ./matching $name "{template}" 
+   done
+   echo ""
+fi

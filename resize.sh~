@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $1 = 1 ]
+then
+    for template in tmpproc/inf/rotate0/*.ppm; do
+	bname=`basename ${template}`
+	convert "${template}" tmpproc/inf/rotate0/1.0/$bname
+        convert -resize 50% "${template}" tmpproc/inf/rotate0/0.5/$bname
+	convert -resize 200% "${template}" tmpproc/inf/rotate0/2.0/$bname
+    done

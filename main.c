@@ -68,7 +68,7 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 //level4用
-void templateMatchingGray1(Image* src, Image* template, Point* position, double* distance)
+void templateMatchingGray1(Image* src, Image* template, Point* position, double* distance,int bit)
 {
 	if (src->channel != 1 || template->channel != 1)
 	{
@@ -80,9 +80,40 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
-	for (y = 0; y < (src->height - template->height); y++)
+	for (y = bit; y < (src->height - template->height); y+=bit)
 	{
-		for (x = 0; x < src->width - template->width; x++)
+		for (x = bit; x < src->width - template->width; x+=bit)
+		{
+			int distance1 = 0;
+			//SSD
+			for (j = 0; j < template->height; j++)
+			{
+				for (i = 0; i < template->width; i++)
+				{
+				  if(template->data[j*template->width+i]==0){continue;}
+				  int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
+				  distance1 += v*v; 
+				}	
+			}
+			
+			if(distance1 == 0){
+			  position->x = x;
+			  position->y = y;
+			  *distance = 0;
+			  return;
+			}
+		       
+			if (distance1 < min_distance)
+			{
+				min_distance = distance1;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+	for (y = ret_y-bit; y < ret_y+bit; y++)
+	{
+		for (x = ret_x+bit; x < ret_x+bit; x++)
 		{
 			int distance1 = 0;
 			//SSD
@@ -117,6 +148,38 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 
+//level3用
+void templateMatchingGray2(Image* src, Image* template, Point* position, double* distance)
+{
+	if (src->channel != 1 || template->channel != 1)
+	{
+		fprintf(stderr, "src and/or templeta image is not a gray image.\n");
+		return;
+	}
+
+	double max_zncc = 1;
+	int ret_x = 0;
+	int ret_y = 0;
+	int x, y, i, j;
+	for (y = 0; y < (src->height - template->height); y++)
+	{
+		for (x = 0; x < src->width - template->width; x++)
+		{
+		  double similarity = -(zncc(src,template,x,y)+1)/2;
+		       
+			if (similarity > max_zncc)
+			{
+				max_zncc = similarity;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+
+	position->x = ret_x;
+	position->y = ret_y;
+	*distance = max_zncc;
+}
 void templateMatchingColor(Image* src, Image* template, Point* position, double* distance)
 {
 	if (src->channel != 3 || template->channel != 3)
@@ -160,6 +223,68 @@ void templateMatchingColor(Image* src, Image* template, Point* position, double*
 	position->x = ret_x;
 	position->y = ret_y;
 	*distance = sqrt(min_distance) / (template->width*template->height);
+}
+
+//zncc
+double zncc(Image* src, Image* tmp,  int src_x, int src_y){
+  int width = tmp->width;
+  int height =  tmp->height;
+  int y,x;
+  //平均
+  double src_ave[3];
+  double tmp_ave[3];
+  for(y = 0; y < height; y++){
+    for(x = 0; x < width; x++){
+      int pt = 3 * ((y + src_y)*src->width + (x + src_x));
+      src_ave[0] += src->data[pt + 0];
+      tmp_ave[0] += tmp->data[3*(y*width + x) + 0];
+      src_ave[1] += src->data[pt + 1];
+      tmp_ave[1] += tmp->data[3*(y*width + x) + 1];
+      src_ave[2] += src->data[pt + 2];
+      tmp_ave[2] += tmp->data[3*(y*width + x) + 2];
+    }
+  }
+  src_ave[0]=src_ave[0]/width*height;
+  src_ave[1]=src_ave[1]/width*height;
+  src_ave[2]=src_ave[2]/width*height;
+  tmp_ave[0]=tmp_ave[0]/width*height;
+  tmp_ave[1]=tmp_ave[1]/width*height;
+  tmp_ave[2]=tmp_ave[2]/width*height;
+
+  //分散
+  double src_var[3];
+  double tmp_var[3];
+  for(y = 0; y < height; y++){
+    for(x = 0 ;x < width ; x++){
+      int pt = 3 * ((y + src_y)*src->width + (x + src_x));
+      double v = src->data[pt+0]-src_ave[0];
+      double s = tmp->data[3*(y*width+x)+0]-tmp_ave[0];
+      src_var[0] += v*v;
+      tmp_var[0] += s*s;
+      v = src->data[pt+1]-src_ave[1];
+      s = tmp->data[3*(y*width+x)+1]-tmp_ave[1];
+      src_var[1] += v*v;
+      tmp_var[1] += s*s;
+      v = src->data[pt+2]-src_ave[2];
+      s = tmp->data[3*(y*width+x)+2]-tmp_ave[2];
+      src_var[2] += v*v;
+      tmp_var[2] += s*s;
+    }
+  }
+
+  //znccの計算
+  double zncc=0;
+  for(y = 0; y < height; y++){
+    for(x = 0 ;x < width ; x++){
+      int pt = 3 * ((y + src_y)*src->width + (x + src_x));
+      //r
+      zncc += (src->data[pt+0]-src_ave[0])*(tmp->data[3*(y*width+x)+0]-tmp_ave[0])/sqrt(src_var[0]*tmp_var[0]);
+      //g
+      zncc += (src->data[pt+1]-src_ave[1])*(tmp->data[3*(y*width+x)+1]-tmp_ave[1])/sqrt(src_var[1]*tmp_var[1]);
+      //b
+      zncc += (src->data[pt+2]-src_ave[2])*(tmp->data[3*(y*width+x)+2]-tmp_ave[2])/sqrt(src_var[2]*tmp_var[2]);
+    }
+  }
 }
 
 // test/beach3.ppm template /airgun_women_syufu.ppm 0 0.5 cwp
@@ -225,7 +350,8 @@ int main(int argc, char** argv)
 		//level別で処理を場合分け
 		int bit;
 		if(level==4){
-		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
+		  bit = 3;
+		  templateMatchingGray1(img_gray, template_gray, &result, &distance,bit);
 		}else if(level==3){
 		  bit = 1;
 		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
