@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 		cvtColorGray(template, template_gray);
 
 		//level別で処理を場合分け
-		if(level==1|level==4|level==6){
+		if(level==4|level==6){
 		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
 		}else{
 		  templateMatchingGray(img_gray, template_gray, &result, &distance);
