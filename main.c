@@ -350,7 +350,7 @@ int main(int argc, char** argv)
 		//level別で処理を場合分け
 		int bit;
 		if(level==4){
-		  bit = 3;
+		  bit = 1;
 		  templateMatchingGray1(img_gray, template_gray, &result, &distance,bit);
 		}else if(level==3){
 		  bit = 1;
