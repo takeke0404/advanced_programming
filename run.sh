@@ -1,23 +1,23 @@
 #!/bin/sh
-# imagemagickで何か画像処理をして，/imgprocにかきこみ，テンプレートマッチング
-for image in $1/test/*.ppm; do
-    bname=`basename ${image}`
-    name="imgproc/"$bname
-    x=0    	#
-    convert "${image}" $name # 何もしない画像処理
-#   convert -blur 2x6 "${image}" "${name}"
-#   convert -median 3 "${image}" "${name}"
-    rotation=0
-    echo $bname:
+if [ $1 = level5 ]
+then
     for template in $1/*.ppm; do
-	echo `basename ${template}`
-	if [ $x = 0 ]
-	then
-	    ./matching $name "${template}" rotation 0.7 cwpg
-	    x=1
-	else
-	    ./matching $name "${template}" rotation 0.7 wpg
-	fi
+	bname=`basename ${template}`
+	convert "${template}" tmpproc/1.0/$bname
+        convert -resize 50% "${template}" tmpproc/0.5/$bname
+	convert -resize 200% "${template}" tmpproc/2.0/$bname
     done
-    echo ""
-done
+fi
+if [ $1 = level6 ]
+then
+    for template in $1/*.ppm; do
+	bname=`basename ${template}`
+	convert "${template}" tmpproc/rotate0/$bname
+        convert -rotate 90 "${template}" tmpproc/rotate90/$bname
+	convert -rotate 180 "${template}" tmpproc/rotate180/$bname
+	convert -rotate 270 "${template}" tmpproc/rotate270/$bname
+    done
+fi
+rm -rf result/$1*
+time seq 0 9 | xargs -P10 -n1 sh parallel.sh $1 
+
