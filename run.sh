@@ -4,9 +4,9 @@ for image in $1/test/*.ppm; do
     bname=`basename ${image}`
     name="imgproc/"$bname
     x=0    	#
-#    convert "${image}" $name # ‰½‚à‚µ‚È‚¢‰æ‘œˆ—
+    convert "${image}" $name # ‰½‚à‚µ‚È‚¢‰æ‘œˆ—
 #   convert -blur 2x6 "${image}" "${name}"
-   convert -median 3 "${image}" "${name}"
+#   convert -median 3 "${image}" "${name}"
     rotation=0
     echo $bname:
     for template in $1/*.ppm; do

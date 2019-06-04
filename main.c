@@ -5,7 +5,7 @@
 #include <string.h>
 #include <limits.h>
 
-void templateMatchingGray(Image* src, Image* template, Point* position, double* distance)
+void templateMatchingGray(Image* src, Image* template, Point* position, double* distance,int bit)
 {
 	if (src->channel != 1 || template->channel != 1)
 	{
@@ -17,9 +17,9 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
-	for (y = 0; y < (src->height - template->height); y++)
+	for (y = bit; y < (src->height - template->height); y+=bit)
 	{
-		for (x = 0; x < src->width - template->width; x++)
+		for (x = bit; x < src->width - template->width; x+=bit)
 		{
 			int distance = 0;
 			//SSD
@@ -39,6 +39,29 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 			}
 		}
 	}
+	for (y = ret_y -bit; y < ret_y +bit; y++)
+	{
+		for (x = ret_x - bit; x < ret_x + bit; x++)
+		{
+			int distance = 0;
+			//SSD
+			for (j = 0; j < template->height; j++)
+			{
+				for (i = 0; i < template->width; i++)
+				{
+					int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
+					distance += v*v;
+				}
+			}
+			if (distance < min_distance)
+			{
+				min_distance = distance;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+	
 
 	position->x = ret_x;
 	position->y = ret_y;
@@ -192,10 +215,15 @@ int main(int argc, char** argv)
 		cvtColorGray(template, template_gray);
 
 		//level別で処理を場合分け
-		if(level==1|level==4){
+		int bit;
+		if(level==4){
 		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
+		}else if(level==3){
+		  bit = 1;
+		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
 		}else{
-		  templateMatchingGray(img_gray, template_gray, &result, &distance);
+		  bit = 3;
+		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
 		}
 
 		freeImage(img_gray);

@@ -7,10 +7,10 @@ then
    echo `basename ${template}`
    if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.9 wpg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.9 wpg
        fi
    echo ""
 fi
