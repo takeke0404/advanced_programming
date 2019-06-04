@@ -117,6 +117,38 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 
+//level3用
+void templateMatchingGray2(Image* src, Image* template, Point* position, double* distance)
+{
+	if (src->channel != 1 || template->channel != 1)
+	{
+		fprintf(stderr, "src and/or templeta image is not a gray image.\n");
+		return;
+	}
+
+	double max_zncc = 1;
+	int ret_x = 0;
+	int ret_y = 0;
+	int x, y, i, j;
+	for (y = 0; y < (src->height - template->height); y++)
+	{
+		for (x = 0; x < src->width - template->width; x++)
+		{
+		  double similarity = -(zncc(src,template,x,y)+1)/2;
+		       
+			if (similarity > max_zncc)
+			{
+				max_zncc = similarity;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+
+	position->x = ret_x;
+	position->y = ret_y;
+	*distance = max_zncc;
+}
 void templateMatchingColor(Image* src, Image* template, Point* position, double* distance)
 {
 	if (src->channel != 3 || template->channel != 3)
