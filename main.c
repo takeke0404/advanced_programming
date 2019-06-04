@@ -68,7 +68,7 @@ void templateMatchingGray(Image* src, Image* template, Point* position, double* 
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 //level4用
-void templateMatchingGray1(Image* src, Image* template, Point* position, double* distance)
+void templateMatchingGray1(Image* src, Image* template, Point* position, double* distance,int bit)
 {
 	if (src->channel != 1 || template->channel != 1)
 	{
@@ -80,9 +80,40 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
-	for (y = 0; y < (src->height - template->height); y++)
+	for (y = bit; y < (src->height - template->height); y+=bit)
 	{
-		for (x = 0; x < src->width - template->width; x++)
+		for (x = bit; x < src->width - template->width; x+=bit)
+		{
+			int distance1 = 0;
+			//SSD
+			for (j = 0; j < template->height; j++)
+			{
+				for (i = 0; i < template->width; i++)
+				{
+				  if(template->data[j*template->width+i]==0){continue;}
+				  int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
+				  distance1 += v*v; 
+				}	
+			}
+			
+			if(distance1 == 0){
+			  position->x = x;
+			  position->y = y;
+			  *distance = 0;
+			  return;
+			}
+		       
+			if (distance1 < min_distance)
+			{
+				min_distance = distance1;
+				ret_x = x;
+				ret_y = y;
+			}
+		}
+	}
+	for (y = ret_y-bit; y < ret_y+bit; y++)
+	{
+		for (x = ret_x+bit; x < ret_x+bit; x++)
 		{
 			int distance1 = 0;
 			//SSD
@@ -225,7 +256,8 @@ int main(int argc, char** argv)
 		//level別で処理を場合分け
 		int bit;
 		if(level==4){
-		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
+		  bit = 3;
+		  templateMatchingGray1(img_gray, template_gray, &result, &distance,bit);
 		}else if(level==3){
 		  bit = 1;
 		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
