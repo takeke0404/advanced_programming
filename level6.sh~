@@ -1,0 +1,9 @@
+#!/bin/sh
+name=$1
+if [ $1 = 1]
+   template="tmpproc/rotate0/"airgun_women_syufu.ppm
+   echo `basename ${template}`
+then
+    ./matching $name "${template}" 0 0.5 wpg
+    echo ""
+fi

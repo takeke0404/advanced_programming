@@ -7,10 +7,17 @@ then
    echo `basename ${template}`
    if [ $x = 0 ]
        then
+<<<<<<< HEAD
 	   ./matching $name "${template}" rotation 0.9 wpg
 	   x=1
        else
 	   ./matching $name "${template}" rotation 0.9 wpg
+=======
+	   ./matching $name "${template}" rotation 0.8 pg
+	   x=1
+       else
+	   ./matching $name "${template}" rotation 0.8 pg
+>>>>>>> 57e9620170c174dbd056078b9193b1304abd5063
        fi
    echo ""
 fi
@@ -20,10 +27,10 @@ then
    echo `basename ${template}`
    if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
        fi
    echo ""
 fi
@@ -33,10 +40,10 @@ then
    echo `basename ${template}`
    if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
        fi
    echo ""
 fi
@@ -46,10 +53,10 @@ then
    echo `basename ${template}`
    if [ $x = 0 ]
        then
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
 	   x=1
        else
-	   ./matching $name "${template}" rotation 0.8 wpg
+	   ./matching $name "${template}" rotation 0.8 pg
        fi
    echo ""
 fi
