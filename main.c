@@ -63,23 +63,19 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 		{
 			int distance1 = 0;
 			//SSD
-			//int end_of_outer_loop = 0;
 			for (j = 0; j < template->height; j++)
 			{
-			  //if(end_of_outer_loop==1)break;
 				for (i = 0; i < template->width; i++)
 				{
 				  if(template->data[j*template->width+i]==0){continue;}
-				  //残差逐次検定法
-				  //if(distance > min_distance){end_of_outer_loop = 1;break;}
 				  int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
 				  distance1 += v*v; 
 				}	
 			}
 			
 			if(distance1 == 0){
-			  position->x = ret_x;
-			  position->y = ret_y;
+			  position->x = x;
+			  position->y = y;
 			  *distance = 0;
 			  return;
 			}
@@ -204,7 +200,7 @@ int main(int argc, char** argv)
 		cvtColorGray(template, template_gray);
 
 		//level別で処理を場合分け
-		if(level==1|level==4){
+		if(level==1|level==4|level==6){
 		  templateMatchingGray1(img_gray, template_gray, &result, &distance);
 		}else{
 		  templateMatchingGray(img_gray, template_gray, &result, &distance);
