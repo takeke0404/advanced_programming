@@ -61,20 +61,32 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	{
 		for (x = 0; x < src->width - template->width; x++)
 		{
-			int distance = 0;
+			int distance1 = 0;
 			//SSD
+			//int end_of_outer_loop = 0;
 			for (j = 0; j < template->height; j++)
 			{
+			  //if(end_of_outer_loop==1)break;
 				for (i = 0; i < template->width; i++)
 				{
 				  if(template->data[j*template->width+i]==0){continue;}
-					int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
-					distance += v*v;
-				}
+				  //残差逐次検定法
+				  //if(distance > min_distance){end_of_outer_loop = 1;break;}
+				  int v = (src->data[(y + j)*src->width + (x + i)] - template->data[j*template->width + i]);
+				  distance1 += v*v; 
+				}	
 			}
-			if (distance < min_distance)
+			
+			if(distance1 == 0){
+			  position->x = ret_x;
+			  position->y = ret_y;
+			  *distance = 0;
+			  return;
+			}
+		       
+			if (distance1 < min_distance)
 			{
-				min_distance = distance;
+				min_distance = distance1;
 				ret_x = x;
 				ret_y = y;
 			}
