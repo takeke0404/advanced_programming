@@ -1,2 +1,0 @@
-mokuzai_hakobu 18 274 64 64 0 0.043367
-ocean_beach_kinzokutanchi 48 223 64 64 90 0.043812

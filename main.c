@@ -242,7 +242,7 @@ double zncc1(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
   double tmp_var[3];
   double zncc[3];
   int i;
-  for(i=0;i<3;i++){
+  for(i = 0;i<3;i++){
     src_ave[i]=0;
     tmp_ave[i]=0;
     src_var[i]=0;
@@ -254,20 +254,16 @@ double zncc1(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
       int pt = 3 * ((y + src_y)*src->width + (x + src_x));
       int pt2 = 3*(y*width + x);
       if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
-      src_ave[0] += src->data[pt + 0];
-      tmp_ave[0] += tmp->data[pt2 + 0];
-      src_ave[1] += src->data[pt + 1];
-      tmp_ave[1] += tmp->data[pt2 + 1];
-      src_ave[2] += src->data[pt + 2];
-      tmp_ave[2] += tmp->data[pt2 + 2];
+      for(i=0;i<3;i++){
+	src_ave[i]+=src->data[pt+i];
+	tmp_ave[i]+=tmp->data[pt2+i];
+      }
     }
   }
-  src_ave[0]=src_ave[0]/(width*height);
-  src_ave[1]=src_ave[1]/(width*height);
-  src_ave[2]=src_ave[2]/(width*height);
-  tmp_ave[0]=tmp_ave[0]/(width*height);
-  tmp_ave[1]=tmp_ave[1]/(width*height);
-  tmp_ave[2]=tmp_ave[2]/(width*height);
+  for(i=0;i<3;i++){
+    src_ave[i]=src_ave[i]/(width*height);
+    tmp_ave[i]=tmp_ave[i]/(width*height);
+  }
 
   //分散
   for(y = 0; y < height; y++){
@@ -275,18 +271,12 @@ double zncc1(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
       int pt = 3 * ((y + src_y)*src->width + (x + src_x));
       int pt2 = 3*(y*width + x);
       if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
-      double v = src->data[pt + 0]-src_ave[0];
-      double s = tmp->data[pt2 + 0]-tmp_ave[0];
-      src_var[0] += v*v;
-      tmp_var[0] += s*s;
-      v = src->data[pt + 1]-src_ave[1];
-      s = tmp->data[pt2 + 1]-tmp_ave[1];
-      src_var[1] += v*v;
-      tmp_var[1] += s*s;
-      v = src->data[pt + 2]-src_ave[2];
-      s = tmp->data[pt2 + 2]-tmp_ave[2];
-      src_var[2] += v*v;
-      tmp_var[2] += s*s;
+      for(i = 0; i<3; i++){
+	double v = src->data[pt + i]-src_ave[i];
+	double s = tmp->data[pt2 + i]-tmp_ave[i];
+	src_var[i] += v*v;
+	tmp_var[i] += s*s;
+      }
     }
   }
 
@@ -294,24 +284,22 @@ double zncc1(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
   for(y = 0; y < height; y++){
     for(x = 0 ;x < width ; x++){
       int pt = 3 * ((y + src_y)*src->width + (x + src_x));
-      int pt2 = 3*(y*width + x);
-      if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
-      //r
-      zncc[0] += (src->data[pt + 0]-src_ave[0])*(tmp->data[pt2 + 0]-tmp_ave[0]);
-      //g
-      zncc[1] += (src->data[pt + 1]-src_ave[1])*(tmp->data[pt2 + 1]-tmp_ave[1]);
-      //b
-      zncc[2] += (src->data[pt + 2]-src_ave[2])*(tmp->data[pt2 + 2]-tmp_ave[2]);
+      int pt2 = 3 * (y*width + x);
+      if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){
+	continue;
+      }else{
+	for(i=0;i<3;i++){
+	  zncc[i] += (src->data[pt + i]-src_ave[i])*(tmp->data[pt2 + i]-tmp_ave[i]);
+	}
+      }
     }
   }
-  double a = sqrt(src_var[0])*sqrt(tmp_var[0]);
-  zncc[0]/=a;
-  a = sqrt(src_var[1])*sqrt(tmp_var[1]);
-  zncc[1]/=a;
-  a = sqrt(src_var[2])*sqrt(tmp_var[2]);
-  zncc[2]/=a;
+  for(i=0;i<3;i++){
+    double a = sqrt(src_var[i])*sqrt(tmp_var[i]);
+    zncc[i]/=a;
+  }
   double answer = 0;
-  answer = (zncc[0]+zncc[1]+zncc[2]);
+  answer = (zncc[0]+zncc[1]+zncc[2])/3.0;
   return answer;
 }
 //zncc
@@ -444,7 +432,11 @@ int main(int argc, char** argv)
 	}
 	else
 	{
+	  if(level==57){
+		templateMatchingZNCC(img, template, &result, &distance,1);
+	  }else{
 		templateMatchingColor(img, template, &result, &distance);
+	  }
 	}
 
 	if (distance < threshold)
