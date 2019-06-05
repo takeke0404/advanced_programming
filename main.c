@@ -5,6 +5,9 @@
 #include <string.h>
 #include <limits.h>
 
+double zncc1(Image* src,Image* template,int x,int y,int ignoreBlack);
+double zncc(Image* src,Image* template,int x,int y,int ignoreBlack);
+
 void templateMatchingGray(Image* src, Image* template, Point* position, double* distance,int bit)
 {
 	if (src->channel != 1 || template->channel != 1)
@@ -148,16 +151,10 @@ void templateMatchingGray1(Image* src, Image* template, Point* position, double*
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 
-//level3用
-void templateMatchingGray2(Image* src, Image* template, Point* position, double* distance)
+//ZNCC用
+void templateMatchingZNCC(Image* src, Image* template, Point* position, double* distance,int ignoreBlack)
 {
-	if (src->channel != 1 || template->channel != 1)
-	{
-		fprintf(stderr, "src and/or templeta image is not a gray image.\n");
-		return;
-	}
-
-	double max_zncc = 1;
+	double min_zncc = INT_MAX;
 	int ret_x = 0;
 	int ret_y = 0;
 	int x, y, i, j;
@@ -165,20 +162,28 @@ void templateMatchingGray2(Image* src, Image* template, Point* position, double*
 	{
 		for (x = 0; x < src->width - template->width; x++)
 		{
-		  double similarity = -(zncc(src,template,x,y)+1)/2;
+		  double a = 0;
+		  if(src->channel==1){
+		    a = zncc(src,template,x,y,ignoreBlack);
+		  }else{
+		    a = zncc1(src,template,x,y,ignoreBlack);
+		  }
+		  a/=2;
+		  a=a*(-1.0);
+		  a+=0.5;
+		  double similarity = a;
 
-			if (similarity > max_zncc)
+			if (similarity < min_zncc)
 			{
-				max_zncc = similarity;
+				min_zncc = similarity;
 				ret_x = x;
 				ret_y = y;
 			}
 		}
 	}
-
 	position->x = ret_x;
 	position->y = ret_y;
-	*distance = max_zncc;
+	*distance = min_zncc;
 }
 void templateMatchingColor(Image* src, Image* template, Point* position, double* distance)
 {
@@ -225,50 +230,122 @@ void templateMatchingColor(Image* src, Image* template, Point* position, double*
 	*distance = sqrt(min_distance) / (template->width*template->height);
 }
 
-//zncc
-double zncc(Image* src, Image* tmp,  int src_x, int src_y){
+//zncc(color)
+double zncc1(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
   int width = tmp->width;
   int height =  tmp->height;
   int y,x;
   //平均
   double src_ave[3];
   double tmp_ave[3];
+  double src_var[3];
+  double tmp_var[3];
+  double zncc[3];
+  int i;
+  for(i=0;i<3;i++){
+    src_ave[i]=0;
+    tmp_ave[i]=0;
+    src_var[i]=0;
+    tmp_var[i]=0;
+    zncc[i]=0;
+  }
   for(y = 0; y < height; y++){
     for(x = 0; x < width; x++){
       int pt = 3 * ((y + src_y)*src->width + (x + src_x));
+      int pt2 = 3*(y*width + x);
+      if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
       src_ave[0] += src->data[pt + 0];
-      tmp_ave[0] += tmp->data[3*(y*width + x) + 0];
+      tmp_ave[0] += tmp->data[pt2 + 0];
       src_ave[1] += src->data[pt + 1];
-      tmp_ave[1] += tmp->data[3*(y*width + x) + 1];
+      tmp_ave[1] += tmp->data[pt2 + 1];
       src_ave[2] += src->data[pt + 2];
-      tmp_ave[2] += tmp->data[3*(y*width + x) + 2];
+      tmp_ave[2] += tmp->data[pt2 + 2];
     }
   }
-  src_ave[0]=src_ave[0]/width*height;
-  src_ave[1]=src_ave[1]/width*height;
-  src_ave[2]=src_ave[2]/width*height;
-  tmp_ave[0]=tmp_ave[0]/width*height;
-  tmp_ave[1]=tmp_ave[1]/width*height;
-  tmp_ave[2]=tmp_ave[2]/width*height;
+  src_ave[0]=src_ave[0]/(width*height);
+  src_ave[1]=src_ave[1]/(width*height);
+  src_ave[2]=src_ave[2]/(width*height);
+  tmp_ave[0]=tmp_ave[0]/(width*height);
+  tmp_ave[1]=tmp_ave[1]/(width*height);
+  tmp_ave[2]=tmp_ave[2]/(width*height);
 
   //分散
-  double src_var[3];
-  double tmp_var[3];
   for(y = 0; y < height; y++){
     for(x = 0 ;x < width ; x++){
       int pt = 3 * ((y + src_y)*src->width + (x + src_x));
-      double v = src->data[pt+0]-src_ave[0];
-      double s = tmp->data[3*(y*width+x)+0]-tmp_ave[0];
+      int pt2 = 3*(y*width + x);
+      if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
+      double v = src->data[pt + 0]-src_ave[0];
+      double s = tmp->data[pt2 + 0]-tmp_ave[0];
       src_var[0] += v*v;
       tmp_var[0] += s*s;
-      v = src->data[pt+1]-src_ave[1];
-      s = tmp->data[3*(y*width+x)+1]-tmp_ave[1];
+      v = src->data[pt + 1]-src_ave[1];
+      s = tmp->data[pt2 + 1]-tmp_ave[1];
       src_var[1] += v*v;
       tmp_var[1] += s*s;
-      v = src->data[pt+2]-src_ave[2];
-      s = tmp->data[3*(y*width+x)+2]-tmp_ave[2];
+      v = src->data[pt + 2]-src_ave[2];
+      s = tmp->data[pt2 + 2]-tmp_ave[2];
       src_var[2] += v*v;
       tmp_var[2] += s*s;
+    }
+  }
+
+  //znccの計算
+  for(y = 0; y < height; y++){
+    for(x = 0 ;x < width ; x++){
+      int pt = 3 * ((y + src_y)*src->width + (x + src_x));
+      int pt2 = 3*(y*width + x);
+      if(ignoreBlack==1 && tmp->data[pt2 + 0]==0 && tmp->data[pt2 + 1]==0 && tmp->data[pt2 + 2] == 0){continue;}
+      //r
+      zncc[0] += (src->data[pt + 0]-src_ave[0])*(tmp->data[pt2 + 0]-tmp_ave[0]);
+      //g
+      zncc[1] += (src->data[pt + 1]-src_ave[1])*(tmp->data[pt2 + 1]-tmp_ave[1]);
+      //b
+      zncc[2] += (src->data[pt + 2]-src_ave[2])*(tmp->data[pt2 + 2]-tmp_ave[2]);
+    }
+  }
+  double a = sqrt(src_var[0])*sqrt(tmp_var[0]);
+  zncc[0]/=a;
+  a = sqrt(src_var[1])*sqrt(tmp_var[1]);
+  zncc[1]/=a;
+  a = sqrt(src_var[2])*sqrt(tmp_var[2]);
+  zncc[2]/=a;
+  double answer = 0;
+  answer = (zncc[0]+zncc[1]+zncc[2]);
+  return answer;
+}
+//zncc
+double zncc(Image* src, Image* tmp,  int src_x, int src_y,int ignoreBlack){
+  int width = tmp->width;
+  int height =  tmp->height;
+  int y,x;
+  //平均
+  double src_ave=0;
+  double tmp_ave=0;
+  double src_var=0;
+  double tmp_var=0;
+  for(y = 0; y < height; y++){
+    for(x = 0; x < width; x++){
+      int pt = (y + src_y)*src->width + (x + src_x);
+      int pt2 = y*width + x;
+      if(ignoreBlack==1 && tmp->data[pt2]==0){continue;}
+      src_ave += src->data[pt];
+      tmp_ave += tmp->data[pt2];
+    }
+  }
+  src_ave=src_ave/(width*height);
+  tmp_ave=tmp_ave/(width*height);
+
+  //分散
+  for(y = 0; y < height; y++){
+    for(x = 0 ;x < width; x++){
+      int pt = (y + src_y)*src->width + (x + src_x);
+      int pt2 = y*width + x;
+      if(ignoreBlack==1 && tmp->data[pt2]==0){continue;}
+      double v = src->data[pt]-src_ave;
+      double s = tmp->data[pt2]-tmp_ave;
+      src_var += v*v;
+      tmp_var += s*s;
     }
   }
 
@@ -276,16 +353,17 @@ double zncc(Image* src, Image* tmp,  int src_x, int src_y){
   double zncc=0;
   for(y = 0; y < height; y++){
     for(x = 0 ;x < width ; x++){
-      int pt = 3 * ((y + src_y)*src->width + (x + src_x));
-      //r
-      zncc += (src->data[pt+0]-src_ave[0])*(tmp->data[3*(y*width+x)+0]-tmp_ave[0])/sqrt(src_var[0]*tmp_var[0]);
-      //g
-      zncc += (src->data[pt+1]-src_ave[1])*(tmp->data[3*(y*width+x)+1]-tmp_ave[1])/sqrt(src_var[1]*tmp_var[1]);
-      //b
-      zncc += (src->data[pt+2]-src_ave[2])*(tmp->data[3*(y*width+x)+2]-tmp_ave[2])/sqrt(src_var[2]*tmp_var[2]);
+      int pt = (y + src_y)*src->width + (x + src_x);
+      int pt2 = y*width + x;
+      if(ignoreBlack==1 && tmp->data[pt2]==0){continue;}
+      zncc += (src->data[pt]-src_ave)*(tmp->data[pt2]-tmp_ave);
     }
   }
+  zncc/=sqrt(src_var)*sqrt(tmp_var);
+  return zncc;
 }
+
+
 
 // test/beach3.ppm template /airgun_women_syufu.ppm 0 0.5 cwp
 int main(int argc, char** argv)
@@ -353,8 +431,9 @@ int main(int argc, char** argv)
 		  bit = 1;
 		  templateMatchingGray1(img_gray, template_gray, &result, &distance,bit);
 		}else if(level==3){
-		  bit = 1;
-		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
+		  templateMatchingZNCC(img_gray, template_gray, &result, &distance,0);
+		}else if(level==57){
+		  templateMatchingZNCC(img_gray, template_gray, &result, &distance,1);
 		}else{
 		  bit = 3;
 		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);

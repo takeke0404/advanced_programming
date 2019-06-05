@@ -1,4 +1,5 @@
-/imgproc/*
+/imgproc/*.ppm
+/imgproc/level7/*/*.ppm
 /result/*
 /tmpproc/0.5/*
 /tmpproc/1.0/*
@@ -7,4 +8,5 @@
 /tmpproc/rotate90/*
 /tmpproc/rotate180/*
 /tmpproc/rotate270/*
+/matching
 !.gitkeep
