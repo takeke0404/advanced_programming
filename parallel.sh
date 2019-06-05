@@ -45,6 +45,5 @@ if [ $1 = levelinf ]
 then
    convert "${image}" $name
    seq 1 4 | xargs -P4 -n1 sh levelinf.sh $name
-   sed -i -e '2,6d' ./result/levelinf_00$2.txt
 fi
 
