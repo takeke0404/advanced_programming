@@ -9,4 +9,5 @@
 /tmpproc/rotate180/*
 /tmpproc/rotate270/*
 /matching
+*.ppm
 !.gitkeep
