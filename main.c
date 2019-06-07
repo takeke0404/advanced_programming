@@ -442,10 +442,12 @@ int main(int argc, char** argv)
 	if (distance < threshold)
 	{
 		writeResult(output_name_txt, getBaseName(template_file), result, template->width, template->height, rotation, distance);
+		/*
 		if (isPrintResult)
 		{
 			printf("[Found    ] %s %d %d %d %d %d %f\n", getBaseName(template_file), result.x, result.y, template->width, template->height, rotation, distance);
 		}
+		*/
 			if (isWriteImageResult)
 	{
 		drawRectangle(img, result, template->width, template->height);
@@ -456,13 +458,16 @@ int main(int argc, char** argv)
 		writePXM(output_name_img, img);
 	}
 	}
+	/*
 	else
 	{
+	  
 		if (isPrintResult)
 		{
 			printf("[Not found] %s %d %d %d %d %d %f\n", getBaseName(template_file), result.x, result.y, template->width, template->height, rotation, distance);
 		}
 	}
+	*/
 
 
 	freeImage(img);
