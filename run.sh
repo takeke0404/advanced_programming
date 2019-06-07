@@ -49,6 +49,14 @@ rm -rf result/$1*
 seq 0 9 | xargs -P10 -n1 sh parallel.sh $1 
 if [ $1 = levelinf ]
 then
+    for i in 0 90 180 270;do
+	for j in 0.5 1.0 2.0;do
+	    for template in tmpproc/inf/rotate$i/$j/*.ppm;do
+		convert -modulate 1000 ${template} ${template}
+		convert -negate ${template} ${template}
+	    done		
+	done
+    done
     for i in `seq 0 9`; do
 	flag=0
 	for pathfile in result/levelinf_00*.ppm; do
@@ -59,7 +67,10 @@ then
 	done
 	if [ $flag = 0 ]
 	then
-	    echo $i
+	    bname="levelinf_00"$i".ppm"
+	    convert -edge 1 "levelinf/test/"$bname "imgproc/inf/"$bname
+	    seq 1 4 | xargs -P4 -n1 sh levelinf2.sh "imgproc/inf/"$bname
 	fi
     done
 fi
+

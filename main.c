@@ -422,9 +422,13 @@ int main(int argc, char** argv)
 		  bit = 1;
 		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
 		}else if(level==57){
-		  templateMatchingZNCC(img_gray, template_gray, &result, &distance,1);
-		}else{
+		  int ignoreBlack = 1;
+		  templateMatchingZNCC(img_gray, template_gray, &result, &distance,ignoreBlack);
+		}else if(level==1 || level==2 || level==5 || level==7){
 		  bit = 3;
+		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
+		}else{
+		  bit=1;
 		  templateMatchingGray(img_gray, template_gray, &result, &distance,bit);
 		}
 

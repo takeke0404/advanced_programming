@@ -1,0 +1,48 @@
+#!/bin/sh
+name=$1
+base=$2
+rotate=$3
+if [ $5 = 1 ]
+then
+	template=$base"/"airgun_women_syufu.ppm
+	#echo `basename ${template}`
+	if [ $4 = 0.5 ]
+	then
+	    ./matching $name ${templatE} $ROTATE 0.3 PWG
+	ELSE
+	    ./MATCHING $NAME ${TEMPLATE} $ROTATE 0.3 PWG
+	FI
+FI
+IF [ $5 = 2 ]
+THEN
+	TEMPLATE=$BASE"/"KIDS_CHUUNIBYOU_GIRL.PPM
+	#ECHO `BASENAME ${TEMPLATE}`
+	IF [ $4 = 0.5 ]
+	THEN
+	    ./MATCHING $NAME ${TEMPLATE} $ROTATE 0.3 PWG
+	ELSE
+	    ./MATCHING $NAME ${TEMPLATE} $ROTATE 0.3 PWG
+	FI
+FI
+IF [ $5 = 3 ]
+THEN
+	TEMPLATE=$BASE"/"MOKUZAI_HAKOBU.PPM
+	#ECHO `BASENAME ${TEMPLATE}`
+	IF [ $4 = 0.5 ]
+	THEN
+	    ./MATCHING $NAME ${TEMPLATE} $ROTATE 0.3 PWG
+	ELSE
+	    ./MATCHING $NAME ${TEMPLATE} $ROTATE 0.3 pwg
+	fi
+fi
+if [ $5 = 4 ]
+then
+	template=$base"/"ocean_beach_kinzokutanchi.ppm
+	#echo `basename ${template}`
+	if [ $4 = 0.5 ]
+	then
+	    ./matching $name ${template} $rotate 0.3 pwg
+	else
+	    ./matching $name ${template} $rotate 0.3 pwg
+	fi
+fi
