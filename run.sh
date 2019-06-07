@@ -47,4 +47,19 @@ then
 fi  
 rm -rf result/$1*
 time seq 0 9 | xargs -P10 -n1 sh parallel.sh $1 
-
+if [ $1 = levelinf ]
+then
+    for i in `seq 0 9`; do
+	flag=0
+	for pathfile in result/levelinf_00*.ppm; do
+	    if [ $pathfile = "result/levelinf_00"$i".ppm" ]
+	    then
+		flag=`expr $flag + 1`
+	    fi
+	done
+	if [ $flag = 0 ]
+	then
+	    echo $i
+	fi
+    done
+fi
