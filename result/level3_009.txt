@@ -1,4 +1,1 @@
-ocean_beach_kinzokutanchi 79 144 64 64 0 0.509904
-airgun_women_syufu 344 17 64 59 0 0.658130
-mokuzai_hakobu 473 316 64 64 0 0.446189
-kids_chuunibyou_girl 308 353 64 79 0 0.008231
+kids_chuunibyou_girl 308 353 64 79 0 0.013995
