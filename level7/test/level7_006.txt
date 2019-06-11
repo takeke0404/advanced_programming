@@ -1,1 +1,1 @@
-ocean_beach_kinzokutanchi 440 337 64 64 0 
+ocean_beach_kinzokutanchi 338 262 128 128 0 

@@ -377,6 +377,9 @@ int main(int argc, char** argv)
 	double threshold = atof(argv[4]);
 	//level変数追加
 	int level = input_file[13]-'0';
+	if(level==7){
+	  level = input_file[20]-'0';
+	}
 
 	char output_name_base[256];
 	char output_name_txt[256];
