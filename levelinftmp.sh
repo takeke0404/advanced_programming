@@ -30,7 +30,7 @@ then
 	#echo `basename ${template}`
 	if [ $4 = 0.5 ]
 	then
-	    ./matching $name ${template} $rotate 0.14 pw
+	    ./matching $name ${template} $rotate 0.13 pw
 	else
 	    ./matching $name ${template} $rotate 0.07 pw
 	fi
