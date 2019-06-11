@@ -41,6 +41,7 @@ levelinf
 二値画像化しxorでpopcountを行う
 エッジ検出
 for文の並列化
+github
 
 したかったもの
 OpenCVによって特徴点抽出
