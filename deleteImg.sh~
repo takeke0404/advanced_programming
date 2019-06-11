@@ -1,0 +1,6 @@
+#!/bin/sh
+rm -rf imgproc/*.ppm
+rm -rf imgproc/inf/*.ppm
+for i in `seq 1 6`;do
+    rm -rf imgproc/level7/level$i/*.ppm
+done
