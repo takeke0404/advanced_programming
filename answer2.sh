@@ -65,7 +65,7 @@ for result in $1/*.txt; do
 	fi
 done
 
-echo "level"$2
+echo $2
 echo "=========================="
 echo "SUMMARY"
 echo "CORRECT RATE: "${correct}"/"${sum}
